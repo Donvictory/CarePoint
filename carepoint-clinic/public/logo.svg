@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="careBg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#0d5c57"/>
+      <stop offset="100%" stopColor="#073b37"/>
+    </linearGradient>
+    <linearGradient id="careArc" x1="8" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#5eead4"/>
+      <stop offset="100%" stopColor="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="11" fill="url(#careBg)"/>
+  <rect x="0.5" y="0.5" width="47" height="47" rx="10.5" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <!-- Embracing "C" for Care -->
+  <path d="M 31 13 A 13.5 13.5 0 1 0 31 35" stroke="url(#careArc)" stroke-width="3.6" stroke-linecap="round"/>
+  <!-- Clinical Medical Cross -->
+  <rect x="20.5" y="16" width="4.5" height="16" rx="2.25" fill="#ffffff"/>
+  <rect x="15" y="21.75" width="15.5" height="4.5" rx="2.25" fill="#ffffff"/>
+  <!-- Focal Point Node -->
+  <circle cx="22.75" cy="24" r="2.2" fill="#0d5c57"/>
+  <circle cx="34" cy="13" r="2.2" fill="#5eead4"/>
+</svg>

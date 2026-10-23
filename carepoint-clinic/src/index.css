@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+  Layout idea: a clinic day sheet. Times run down the left in a serif,
+  providers sit beside them, and the booking slip is a separate ruled panel.
+  Square corners, hairline rules, one green, flat surfaces.
+*/
+@theme {
+  --color-paper: #f3f6f4;
+  --color-ink: #172625;
+  --color-muted: #566664;
+  --color-line: #cfd9d6;
+  --color-brand-50: #e7f0ee;
+  --color-brand-100: #cfe3df;
+  --color-brand-600: #0d5c57;
+  --color-brand-700: #094541;
+  --color-alert: #9b2c1f;
+  --color-alert-bg: #fbeeeb;
+  --color-notice-bg: #f6efd9;
+  --font-sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, "Segoe UI", sans-serif;
+  --font-serif: "Literata", Georgia, "Times New Roman", serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand-600);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+  }
+}
