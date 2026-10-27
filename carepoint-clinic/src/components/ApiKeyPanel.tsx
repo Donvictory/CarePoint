@@ -8,6 +8,7 @@ interface Props {
 
 export default function ApiKeyModal({ onClose, onSaved }: Props) {
   const [value, setValue] = useState(getApiKey());
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -25,7 +26,16 @@ export default function ApiKeyModal({ onClose, onSaved }: Props) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setApiKey(value);
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      setError("Please enter your API key to continue.");
+      inputRef.current?.focus();
+      return;
+    }
+
+    setError(null);
+    setApiKey(trimmed);
     onSaved();
     onClose();
   }
@@ -44,15 +54,15 @@ export default function ApiKeyModal({ onClose, onSaved }: Props) {
         className="w-full max-w-md rounded-xl border border-border-default bg-surface-raised p-6"
       >
         <h2 id="apikey-modal-title" className="text-xl font-semibold text-text-primary">
-          Enter your access key
+          Enter your API key
         </h2>
         <p className="mt-2 text-sm text-text-secondary">
-          The booking service requires an access key to load appointments.
+          The booking service requires an API key to load appointments.
           Your key stays in this browser and is never sent anywhere else.
         </p>
 
         <label htmlFor="api-key-input" className="mt-5 block text-sm font-medium text-text-primary">
-          Access key
+          API key
         </label>
         <input
           ref={inputRef}
@@ -60,10 +70,24 @@ export default function ApiKeyModal({ onClose, onSaved }: Props) {
           type="password"
           autoComplete="off"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Paste your key here"
-          className="mt-2 block min-h-12 w-full rounded-lg border border-border-default bg-surface-base px-4 text-base text-text-primary placeholder:text-text-tertiary"
+          onChange={(e) => {
+            setValue(e.target.value);
+            if (error) setError(null);
+          }}
+          placeholder="Paste your API key here"
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? "api-key-error" : undefined}
+          className={`mt-2 block min-h-12 w-full rounded-lg border bg-surface-base px-4 text-base text-text-primary placeholder:text-text-tertiary outline-none transition-colors ${
+            error
+              ? "border-alert focus:border-alert"
+              : "border-border-default focus:border-text-secondary"
+          }`}
         />
+        {error && (
+          <p id="api-key-error" role="alert" className="mt-2 text-sm text-alert">
+            {error}
+          </p>
+        )}
 
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button

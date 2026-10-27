@@ -6,7 +6,7 @@ const STATUS_COPY: Record<ServiceStatus, { label: string; color: string }> = {
   checking: { label: "Checking service", color: "bg-text-tertiary" },
   connected: { label: "Connected", color: "bg-success" },
   unreachable: { label: "Service unreachable", color: "bg-alert" },
-  unauthorized: { label: "Access key needed", color: "bg-amber-500" },
+  unauthorized: { label: "API key needed", color: "bg-amber-500" },
 };
 
 interface Props {

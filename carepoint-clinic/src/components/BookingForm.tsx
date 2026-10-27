@@ -8,7 +8,6 @@ interface Props {
   slot: Slot;
   onBooked: (booking: Booking) => void;
   onChangeSlot: () => void;
-  /** Called after errors that mean the slot list is stale or access is broken. */
   onServerError: (info: ApiErrorInfo) => void;
 }
 
@@ -36,21 +35,17 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
   const [retryUntil, setRetryUntil] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
-  // One idempotency key per logical booking attempt. It is reused for retries
-  // of the exact same request, and replaced only when the request changes.
   const attempt = useRef<{ key: string; fingerprint: string } | null>(null);
   const submittingRef = useRef(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  // Choosing a different slot is a new booking attempt.
   useEffect(() => {
     attempt.current = null;
     setFailure(null);
     setRetryUntil(null);
   }, [slot.id]);
 
-  // Tick for the 429 countdown.
   useEffect(() => {
     if (retryUntil === null) return;
     const id = setInterval(() => {
@@ -101,9 +96,7 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
         setNow(Date.now());
         setRetryUntil(Date.now() + secs * 1000);
       }
-      // The key was used with a different body on the server. Start fresh next time.
       if (info.kind === "idempotency_mismatch") attempt.current = null;
-      // Definitive answers about the slot: this attempt is over.
       if (info.kind === "conflict" || info.kind === "not_found") attempt.current = null;
 
       if (

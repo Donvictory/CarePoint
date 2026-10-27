@@ -8,7 +8,6 @@ interface Props {
   onSelect: (slot: Slot) => void;
 }
 
-// One row of the day sheet: time, provider, status.
 export default function SlotCard({ slot, selected, onSelect }: Props) {
   const disabled = !slot.available;
   const minutes = durationMinutes(slot.start, slot.end);

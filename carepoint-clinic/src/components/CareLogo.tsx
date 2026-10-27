@@ -6,11 +6,6 @@ interface CareLogoMarkProps {
   hasBackground?: boolean;
 }
 
-/**
- * CareLogoMark
- * Medical emblem: embracing "C" ribbon for care, clinical cross for precision,
- * focal point and beacon node for CarePoint.
- */
 export function CareLogoMark({
   className = "",
   size = 36,
@@ -56,7 +51,6 @@ export function CareLogoMark({
         </>
       ) : null}
 
-      {/* Protective "C" Arc for Care */}
       <path
         d="M 31 13 A 13.5 13.5 0 1 0 31 35"
         stroke={hasBackground ? `url(#${arcId})` : "#14b8a6"}
@@ -64,7 +58,6 @@ export function CareLogoMark({
         strokeLinecap="round"
       />
 
-      {/* Clinical Medical Cross */}
       <rect
         x="20.5"
         y="16"
@@ -82,10 +75,8 @@ export function CareLogoMark({
         fill={hasBackground ? "#ffffff" : "#14b8a6"}
       />
 
-      {/* The Focal "Point" Center Core */}
       <circle cx="22.75" cy="24" r="2.2" fill={hasBackground ? "#0d5c57" : "#ffffff"} />
 
-      {/* Precision Accent Node */}
       <circle cx="34" cy="13" r="2.2" fill={hasBackground ? "#5eead4" : "#14b8a6"} />
     </svg>
   );
@@ -97,10 +88,6 @@ interface CarePointLogoProps {
   subtitle?: string;
 }
 
-/**
- * CarePointLogo
- * Full brand mark + typography lockup
- */
 export function CarePointLogo({
   className = "",
   markSize = 36,

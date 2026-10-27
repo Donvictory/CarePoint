@@ -1,5 +1,3 @@
-// Small hand-drawn SVG marks. No icon library.
-
 export function CrossMark({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

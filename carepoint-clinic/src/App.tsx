@@ -52,7 +52,6 @@ function groupByDay(slots: Slot[]): DayGroup[] {
   return groups;
 }
 
-// B7: IntersectionObserver for scroll reveals
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -60,7 +59,6 @@ function useReveal() {
     const el = ref.current;
     if (!el) return;
 
-    // Respect prefers-reduced-motion.
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -281,7 +279,7 @@ export default function App() {
 
                 <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
                   <span className="bg-gradient-to-r from-[#1A1A1A] to-[#5C5C5C] bg-clip-text text-transparent">
-                    Book your clinic
+                    Book your
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-[#1A1A1A] to-[#5C5C5C] bg-clip-text text-transparent">
@@ -439,14 +437,10 @@ export default function App() {
                         title="Could not load appointments"
                         message={loadError.message}
                         onRetry={() => void loadSlots()}
-                        action={
-                          loadError.kind === "unauthorized"
-                            ? {
-                              label: "Enter access key",
-                              onClick: () => setShowApiKeyModal(true),
-                            }
-                            : undefined
-                        }
+                        action={{
+                          label: "Enter API key",
+                          onClick: () => setShowApiKeyModal(true),
+                        }}
                       />
                     ) : slots && slots.length === 0 ? (
                       <div className="rounded-lg border border-dashed border-border-default p-8">
@@ -468,6 +462,10 @@ export default function App() {
                                 title="Could not refresh availability"
                                 message={`${loadError.message} The list below may be out of date.`}
                                 onRetry={() => void loadSlots()}
+                                action={{
+                                  label: "Enter API key",
+                                  onClick: () => setShowApiKeyModal(true),
+                                }}
                               />
                             </div>
                           )}
@@ -520,8 +518,6 @@ export default function App() {
                     )}
                   </div>
                 </section>
-
-
               </div>
             </RevealSection>
           </>

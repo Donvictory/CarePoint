@@ -58,7 +58,7 @@ const MESSAGES: Record<ApiErrorKind, string> = {
   server:
     "The booking service is temporarily unavailable. Please try again in a little while.",
   network:
-    "We couldn't reach the booking service. Please check your connection and try again.",
+    "We couldn't reach the booking service. Please check your connection  .",
   timeout:
     "The booking service took too long to respond. Please try again.",
   unexpected:
@@ -113,7 +113,7 @@ async function errorFromStatus(response: Response): Promise<ApiError> {
       serverMessage = body.error;
     }
   } catch {
-    // If the response isn't valid JSON, use the normal fallback message.
+
   }
 
   let error: ApiError;

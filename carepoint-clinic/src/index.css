@@ -1,28 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* Surfaces */
   --color-surface-base: #F7F7F5;
   --color-surface-raised: #FFFFFF;
   --color-surface-overlay: #F0F0EE;
   --color-surface-highest: #E8E8E5;
 
-  /* Text */
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #5C5C5C;
   --color-text-tertiary: #8C8C8C;
 
-  /* Borders */
   --color-border-default: #DCDCD8;
   --color-border-subtle: #EAEAE6;
 
-  /* Brand — warm teal */
   --color-brand-400: #0d9488;
   --color-brand-500: #0f766e;
   --color-brand-600: #115e59;
   --color-brand-700: #134e4a;
 
-  /* Semantic */
   --color-alert: #dc2626;
   --color-alert-bg: #fef2f2;
   --color-alert-border: #fecaca;
@@ -46,15 +41,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Focus ring — accessibility requirement, not optional */
 :focus-visible {
   outline: 2px solid var(--color-brand-500);
   outline-offset: 2px;
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
@@ -63,14 +55,11 @@ body {
   }
 }
 
-/* B7: Custom easing — never use default transitions */
 .ease-fluid {
   transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Skeleton pulse for loading states — shaped like real layout */
 @keyframes skeleton-pulse {
-
   0%,
   100% {
     opacity: 0.06;
@@ -87,7 +76,6 @@ body {
   border-radius: 4px;
 }
 
-/* Scroll reveal — B7 compliant, IntersectionObserver driven */
 .reveal {
   opacity: 0;
   transform: translateY(16px);
@@ -103,13 +91,11 @@ body {
   filter: blur(0);
 }
 
-/* Modal backdrop */
 .modal-backdrop {
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(8px);
 }
 
-/* Input styling for light mode */
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -121,7 +107,6 @@ input::placeholder {
   color: var(--color-text-tertiary);
 }
 
-/* Button base states — B9 compliant */
 .btn-primary {
   background: var(--color-brand-600);
   color: #ffffff;
@@ -177,7 +162,6 @@ input::placeholder {
   cursor: not-allowed;
 }
 
-/* Scrollbar styling for light mode */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -191,7 +175,6 @@ input::placeholder {
   border-radius: 3px;
 }
 
-/* Text wrap — no orphaned words */
 h1,
 h2,
 h3 {
