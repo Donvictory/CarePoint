@@ -1,6 +1,3 @@
-// All formatting uses the patient's own browser time zone so every
-// date and time on screen is converted the same way.
-
 const dateFmt = new Intl.DateTimeFormat(undefined, {
   weekday: "long",
   day: "numeric",
@@ -37,7 +34,6 @@ export const formatTime = (iso: string): string => timeFmt.format(new Date(iso))
 export const formatTimeRange = (startIso: string, endIso: string): string =>
   `${formatTime(startIso)} to ${formatTime(endIso)}`;
 
-/** Local calendar day, used to group slots under one heading. */
 export const dayKey = (iso: string): string => dayKeyFmt.format(new Date(iso));
 
 export function durationMinutes(startIso: string, endIso: string): number {

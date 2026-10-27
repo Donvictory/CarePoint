@@ -5,18 +5,15 @@ import type {
   BookingRequest,
   Slot,
 } from "../types/booking";
+import { BookingSchema, SlotSchema } from "../schemas/booking";
 
 const BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ??
   "https://clinic-booking-api-qidy.onrender.com"
 ).replace(/\/+$/, "");
 
-const GET_TIMEOUT_MS = 30_000; // free-tier hosts can take a while to wake up
+const GET_TIMEOUT_MS = 30_000;
 const POST_TIMEOUT_MS = 20_000;
-
-/* ------------------------------------------------------------------ */
-/* API key (client-side setting, entered by the user, never bundled)   */
-/* ------------------------------------------------------------------ */
 
 const API_KEY_STORAGE = "carepoint.apiKey";
 
@@ -33,14 +30,8 @@ export function setApiKey(value: string): void {
     const trimmed = value.trim();
     if (trimmed) localStorage.setItem(API_KEY_STORAGE, trimmed);
     else localStorage.removeItem(API_KEY_STORAGE);
-  } catch {
-    /* storage unavailable; key just won't persist */
-  }
+  } catch { }
 }
-
-/* ------------------------------------------------------------------ */
-/* Errors                                                              */
-/* ------------------------------------------------------------------ */
 
 export class ApiError extends Error {
   info: ApiErrorInfo;
@@ -91,43 +82,84 @@ function buildError(
 ): ApiError {
   let message = MESSAGES[kind];
   if (kind === "rate_limited" && extra.retryAfterSeconds !== undefined) {
-    message = `There have been too many booking attempts. Please wait ${extra.retryAfterSeconds} second${
-      extra.retryAfterSeconds === 1 ? "" : "s"
-    } before trying again.`;
+    message = `There have been too many booking attempts. Please wait ${extra.retryAfterSeconds} second${extra.retryAfterSeconds === 1 ? "" : "s"
+      } before trying again.`;
   }
   return new ApiError({ kind, message, ambiguous: false, ...extra });
 }
 
-function errorFromStatus(response: Response): ApiError {
+
+async function errorFromStatus(response: Response): Promise<ApiError> {
   const { status } = response;
+
+  let serverMessage: string | undefined;
+
+  try {
+    const body: unknown = await response.clone().json();
+
+    if (
+      typeof body === "object" &&
+      body !== null &&
+      "message" in body &&
+      typeof body.message === "string"
+    ) {
+      serverMessage = body.message;
+    } else if (
+      typeof body === "object" &&
+      body !== null &&
+      "error" in body &&
+      typeof body.error === "string"
+    ) {
+      serverMessage = body.error;
+    }
+  } catch {
+    // If the response isn't valid JSON, use the normal fallback message.
+  }
+
+  let error: ApiError;
+
   switch (status) {
     case 400:
-      return buildError("bad_request", { status });
+      error = buildError("bad_request", { status });
+      break;
     case 401:
-      return buildError("unauthorized", { status });
+      error = buildError("unauthorized", { status });
+      break;
     case 404:
-      return buildError("not_found", { status });
+      error = buildError("not_found", { status });
+      break;
     case 409:
-      return buildError("conflict", { status });
+      error = buildError("conflict", { status });
+      break;
     case 422:
-      return buildError("idempotency_mismatch", { status });
+      error = buildError("idempotency_mismatch", { status });
+      break;
     case 429:
-      return buildError("rate_limited", {
+      error = buildError("rate_limited", {
         status,
-        retryAfterSeconds: parseRetryAfter(response.headers.get("Retry-After")),
+        retryAfterSeconds: parseRetryAfter(
+          response.headers.get("Retry-After"),
+        ),
       });
+      break;
     default:
       if (status >= 500) {
-        // The server may have processed the request before failing.
-        return buildError("server", { status, ambiguous: true });
+        error = buildError("server", { status, ambiguous: true });
+      } else {
+        error = buildError("unexpected", { status });
       }
-      return buildError("unexpected", { status });
   }
+
+  if (serverMessage) {
+    return new ApiError({
+      ...error.info,
+      message: serverMessage,
+    });
+  }
+
+  return error;
 }
 
-/* ------------------------------------------------------------------ */
-/* Core request                                                        */
-/* ------------------------------------------------------------------ */
 
 async function request(
   path: string,
@@ -159,42 +191,12 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Shape guards                                                        */
-/* ------------------------------------------------------------------ */
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function isSlot(value: unknown): value is Slot {
-  return (
-    isRecord(value) &&
-    typeof value.id === "string" &&
-    typeof value.provider === "string" &&
-    typeof value.start === "string" &&
-    typeof value.end === "string" &&
-    typeof value.available === "boolean" &&
-    !Number.isNaN(Date.parse(value.start)) &&
-    !Number.isNaN(Date.parse(value.end))
-  );
-}
 
-function isBooking(value: unknown): value is Booking {
-  return (
-    isRecord(value) &&
-    typeof value.id === "string" &&
-    typeof value.slot_id === "string" &&
-    typeof value.name === "string" &&
-    typeof value.email === "string" &&
-    typeof value.status === "string" &&
-    typeof value.created_at === "string"
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Endpoints                                                           */
-/* ------------------------------------------------------------------ */
 
 export async function fetchSlots(): Promise<Slot[]> {
   const response = await request(
@@ -202,14 +204,25 @@ export async function fetchSlots(): Promise<Slot[]> {
     { method: "GET", headers: { "x-api-key": getApiKey() } },
     GET_TIMEOUT_MS,
   );
-  if (!response.ok) throw errorFromStatus(response);
 
-  const body = await readJson(response);
-  if (!isRecord(body) || !Array.isArray(body.slots) || !body.slots.every(isSlot)) {
+  if (!response.ok) throw await errorFromStatus(response);
+
+  const body: unknown = await readJson(response);
+
+  if (!isRecord(body)) {
     throw buildError("unexpected", { status: response.status });
   }
-  return body.slots;
+
+  const result = SlotSchema.array().safeParse(body.slots);
+
+  if (!result.success) {
+    throw buildError("unexpected", { status: response.status });
+  }
+
+  return result.data;
 }
+
+
 
 export async function createBooking(
   payload: BookingRequest,
@@ -228,17 +241,113 @@ export async function createBooking(
     },
     POST_TIMEOUT_MS,
   );
-  if (!response.ok) throw errorFromStatus(response);
 
-  const body = await readJson(response);
-  if (!isBooking(body)) {
-    // The server answered success but we can't read it. A booking may exist.
-    throw buildError("unexpected", { status: response.status, ambiguous: true });
+  if (!response.ok) throw await errorFromStatus(response);
+
+  const body: unknown = await readJson(response);
+  const result = BookingSchema.safeParse(body);
+
+  if (!result.success) {
+    throw buildError("unexpected", {
+      status: response.status,
+      ambiguous: true,
+    });
   }
-  return body;
+
+  return result.data;
 }
+
 
 export function toApiErrorInfo(err: unknown): ApiErrorInfo {
   if (err instanceof ApiError) return err.info;
   return { kind: "unexpected", message: MESSAGES.unexpected, ambiguous: false };
 }
+
+export async function cancelBooking(
+  bookingId: string,
+  email: string,
+): Promise<void> {
+  const params = new URLSearchParams({
+    email: email.trim().toLowerCase(),
+  });
+
+  const response = await request(
+    `/bookings/${encodeURIComponent(bookingId)}?${params.toString()}`,
+    {
+      method: "DELETE",
+      headers: {
+        "x-api-key": getApiKey(),
+      },
+    },
+    POST_TIMEOUT_MS,
+  );
+
+  if (!response.ok) {
+    throw await errorFromStatus(response);
+  }
+}
+
+
+
+export async function fetchBookingsByEmail(
+  email: string,
+): Promise<Booking[]> {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    throw buildError("bad_request");
+  }
+
+  const bookings: Booking[] = [];
+  let cursor: string | null = null;
+
+  do {
+    const params = new URLSearchParams({
+      email: normalizedEmail,
+      limit: "50",
+    });
+
+    if (cursor) {
+      params.set("cursor", cursor);
+    }
+
+    const response = await request(
+      `/bookings?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": getApiKey(),
+        },
+      },
+      GET_TIMEOUT_MS,
+    );
+
+    if (!response.ok) {
+      throw await errorFromStatus(response);
+    }
+
+    const body: unknown = await readJson(response);
+
+    if (
+      !isRecord(body) ||
+      !Array.isArray(body.bookings) ||
+      !(
+        body.next_cursor === null ||
+        typeof body.next_cursor === "string"
+      )
+    ) {
+      throw buildError("unexpected", {
+        status: response.status,
+        ambiguous: true,
+      });
+    }
+
+    bookings.push(...body.bookings);
+    cursor = body.next_cursor;
+  } while (cursor);
+
+  return bookings;
+}
+
+
+

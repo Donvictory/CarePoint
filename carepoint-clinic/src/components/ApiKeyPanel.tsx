@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { getApiKey, setApiKey } from "../services/api";
 
 interface Props {
@@ -6,8 +6,22 @@ interface Props {
   onSaved: () => void;
 }
 
-export default function ApiKeyPanel({ onClose, onSaved }: Props) {
+export default function ApiKeyModal({ onClose, onSaved }: Props) {
   const [value, setValue] = useState(getApiKey());
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => inputRef.current?.focus(), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -18,58 +32,52 @@ export default function ApiKeyPanel({ onClose, onSaved }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-20 flex items-end justify-center bg-ink/40 p-4 sm:items-center"
+      className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="apikey-title"
+      aria-labelledby="apikey-modal-title"
       onClick={onClose}
     >
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md border border-ink bg-paper p-5"
+        className="w-full max-w-md rounded-xl border border-border-default bg-surface-raised p-6"
       >
-        <div className="flex items-start justify-between gap-3">
-          <h2 id="apikey-title" className="font-serif text-xl font-semibold">
-            Booking service access key
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="min-h-11 cursor-pointer px-1 text-sm font-medium underline-offset-4 hover:underline"
-          >
-            Close
-          </button>
-        </div>
-        <p className="mt-2 text-sm text-muted">
-          The booking service asks for an access key. It stays in this browser and is never part of
-          the app code.
+        <h2 id="apikey-modal-title" className="text-xl font-semibold text-text-primary">
+          Enter your access key
+        </h2>
+        <p className="mt-2 text-sm text-text-secondary">
+          The booking service requires an access key to load appointments.
+          Your key stays in this browser and is never sent anywhere else.
         </p>
-        <label htmlFor="api-key" className="mt-4 block text-sm font-medium">
+
+        <label htmlFor="api-key-input" className="mt-5 block text-sm font-medium text-text-primary">
           Access key
         </label>
         <input
-          id="api-key"
+          ref={inputRef}
+          id="api-key-input"
           type="password"
           autoComplete="off"
-          autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="mt-1 block min-h-11 w-full border border-ink bg-white px-3 text-base"
+          placeholder="Paste your key here"
+          className="mt-2 block min-h-12 w-full rounded-lg border border-border-default bg-surface-base px-4 text-base text-text-primary placeholder:text-text-tertiary"
         />
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="min-h-11 cursor-pointer border border-ink px-4 text-sm font-medium"
+            className="btn-secondary min-h-11 px-4 text-sm"
           >
-            Cancel
+            Skip
           </button>
           <button
             type="submit"
-            className="min-h-11 cursor-pointer bg-brand-600 px-4 text-sm font-medium text-white"
+            className="btn-primary min-h-11 px-4 text-base"
           >
-            Save and reload
+            Save and connect
           </button>
         </div>
       </form>

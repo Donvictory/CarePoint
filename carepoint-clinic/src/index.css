@@ -1,24 +1,37 @@
 @import "tailwindcss";
 
-/*
-  Layout idea: a clinic day sheet. Times run down the left in a serif,
-  providers sit beside them, and the booking slip is a separate ruled panel.
-  Square corners, hairline rules, one green, flat surfaces.
-*/
 @theme {
-  --color-paper: #f3f6f4;
-  --color-ink: #172625;
-  --color-muted: #566664;
-  --color-line: #cfd9d6;
-  --color-brand-50: #e7f0ee;
-  --color-brand-100: #cfe3df;
-  --color-brand-600: #0d5c57;
-  --color-brand-700: #094541;
-  --color-alert: #9b2c1f;
-  --color-alert-bg: #fbeeeb;
-  --color-notice-bg: #f6efd9;
-  --font-sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, "Segoe UI", sans-serif;
-  --font-serif: "Literata", Georgia, "Times New Roman", serif;
+  /* Surfaces */
+  --color-surface-base: #F7F7F5;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-overlay: #F0F0EE;
+  --color-surface-highest: #E8E8E5;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #5C5C5C;
+  --color-text-tertiary: #8C8C8C;
+
+  /* Borders */
+  --color-border-default: #DCDCD8;
+  --color-border-subtle: #EAEAE6;
+
+  /* Brand — warm teal */
+  --color-brand-400: #0d9488;
+  --color-brand-500: #0f766e;
+  --color-brand-600: #115e59;
+  --color-brand-700: #134e4a;
+
+  /* Semantic */
+  --color-alert: #dc2626;
+  --color-alert-bg: #fef2f2;
+  --color-alert-border: #fecaca;
+  --color-success: #16a34a;
+  --color-success-bg: #f0fdf4;
+  --color-notice-bg: #fefce8;
+  --color-notice-border: #fde68a;
+
+  --font-sans: "Manrope", system-ui, "Segoe UI", sans-serif;
 }
 
 html {
@@ -26,21 +39,165 @@ html {
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Focus ring — accessibility requirement, not optional */
 :focus-visible {
-  outline: 3px solid var(--color-brand-600);
+  outline: 2px solid var(--color-brand-500);
   outline-offset: 2px;
 }
 
+/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
+}
+
+/* B7: Custom easing — never use default transitions */
+.ease-fluid {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Skeleton pulse for loading states — shaped like real layout */
+@keyframes skeleton-pulse {
+
+  0%,
+  100% {
+    opacity: 0.06;
+  }
+
+  50% {
+    opacity: 0.12;
+  }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+  background: var(--color-text-tertiary);
+  border-radius: 4px;
+}
+
+/* Scroll reveal — B7 compliant, IntersectionObserver driven */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(4px);
+  transition: opacity 800ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 800ms cubic-bezier(0.32, 0.72, 0, 1),
+    filter 800ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+/* Input styling for light mode */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background: var(--color-surface-base);
+  color: var(--color-text-primary);
+}
+
+input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Button base states — B9 compliant */
+.btn-primary {
+  background: var(--color-brand-600);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+  border: none;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98) translateY(1px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-default);
+  cursor: pointer;
+  transition: background 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 150ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: scale(0.98) translateY(1px);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scrollbar styling for light mode */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 3px;
+}
+
+/* Text wrap — no orphaned words */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
 }

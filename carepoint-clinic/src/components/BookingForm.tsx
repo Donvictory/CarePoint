@@ -120,44 +120,43 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
     }
   }
 
-  const inputBase = "mt-1 block min-h-12 w-full bg-white px-3 text-base";
   const zone = timeZoneLabel(slot.start);
 
   return (
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="border border-ink bg-white"
+      className="rounded-xl border border-border-default bg-surface-raised"
       aria-labelledby="booking-heading"
     >
-      <div className="border-b border-ink px-5 py-4">
-        <p className="text-xs uppercase tracking-widest text-muted">Booking slip</p>
-        <h2 id="booking-heading" className="font-serif text-xl font-semibold">
+      <div className="border-b border-border-default px-5 py-4">
+        <p className="text-xs font-medium uppercase tracking-widest text-text-tertiary">Booking slip</p>
+        <h2 id="booking-heading" className="text-xl font-semibold text-text-primary">
           Your appointment
         </h2>
       </div>
 
-      <dl className="divide-y divide-line border-b border-ink px-5 text-sm">
+      <dl className="divide-y divide-border-subtle border-b border-border-default px-5 text-sm">
         <div className="flex justify-between gap-4 py-3">
-          <dt className="text-muted">Provider</dt>
-          <dd className="text-right font-medium">{slot.provider}</dd>
+          <dt className="text-text-secondary">Provider</dt>
+          <dd className="text-right font-medium text-text-primary">{slot.provider}</dd>
         </div>
         <div className="flex justify-between gap-4 py-3">
-          <dt className="text-muted">Date</dt>
-          <dd className="text-right font-medium">{formatDate(slot.start)}</dd>
+          <dt className="text-text-secondary">Date</dt>
+          <dd className="text-right font-medium text-text-primary">{formatDate(slot.start)}</dd>
         </div>
         <div className="flex justify-between gap-4 py-3">
-          <dt className="text-muted">Time</dt>
-          <dd className="text-right font-medium tabular-nums">
+          <dt className="text-text-secondary">Time</dt>
+          <dd className="text-right font-medium tabular-nums text-text-primary">
             {formatTimeRange(slot.start, slot.end)}
-            {zone && <span className="text-muted"> {zone}</span>}
+            {zone && <span className="text-text-secondary"> {zone}</span>}
           </dd>
         </div>
       </dl>
 
       <div className="px-5 py-5">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium">
+          <label htmlFor="name" className="block text-sm font-medium text-text-primary">
             Full name
           </label>
           <input
@@ -170,10 +169,11 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
             onChange={(e) => setName(e.target.value)}
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? "name-error" : undefined}
-            className={`${inputBase} border ${errors.name ? "border-2 border-alert" : "border-ink"}`}
+            placeholder="Your full name"
+            className={`mt-2 block min-h-12 w-full rounded-lg border bg-surface-base px-4 text-base text-text-primary placeholder:text-text-tertiary ${errors.name ? "border-2 border-alert" : "border-border-default"}`}
           />
           {errors.name && (
-            <p id="name-error" className="mt-1 flex items-center gap-2 text-sm text-alert">
+            <p id="name-error" className="mt-1.5 flex items-center gap-2 text-sm text-alert">
               <BangMark className="h-3.5 w-3.5 shrink-0" />
               {errors.name}
             </p>
@@ -181,7 +181,7 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
         </div>
 
         <div className="mt-4">
-          <label htmlFor="email" className="block text-sm font-medium">
+          <label htmlFor="email" className="block text-sm font-medium text-text-primary">
             Email address
           </label>
           <input
@@ -195,10 +195,11 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
             onChange={(e) => setEmail(e.target.value)}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
-            className={`${inputBase} border ${errors.email ? "border-2 border-alert" : "border-ink"}`}
+            placeholder="you@example.com"
+            className={`mt-2 block min-h-12 w-full rounded-lg border bg-surface-base px-4 text-base text-text-primary placeholder:text-text-tertiary ${errors.email ? "border-2 border-alert" : "border-border-default"}`}
           />
           {errors.email && (
-            <p id="email-error" className="mt-1 flex items-center gap-2 text-sm text-alert">
+            <p id="email-error" className="mt-1.5 flex items-center gap-2 text-sm text-alert">
               <BangMark className="h-3.5 w-3.5 shrink-0" />
               {errors.email}
             </p>
@@ -206,19 +207,19 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
         </div>
 
         {failure && (
-          <div role="alert" className="mt-5 border border-alert bg-alert-bg p-3 text-sm">
-            <p className="flex items-start gap-2">
+          <div role="alert" className="mt-5 rounded-lg border border-alert-border bg-alert-bg p-4 text-sm">
+            <p className="flex items-start gap-2 text-text-primary">
               <BangMark className="mt-0.5 h-3.5 w-3.5 shrink-0 text-alert" />
               <span>
                 {failure.kind === "rate_limited" && blockedByRateLimit
-                  ? `There have been too many booking attempts. Please wait ${waitSeconds} second${
+                  ? `Too many booking attempts. Please wait ${waitSeconds} second${
                       waitSeconds === 1 ? "" : "s"
                     } before trying again.`
                   : failure.message}
               </span>
             </p>
             {failure.ambiguous && (
-              <p className="mt-2 pl-5">
+              <p className="mt-2 pl-5 text-text-secondary">
                 Your booking may already have gone through. You can confirm again with the same
                 details and no duplicate will be created.
               </p>
@@ -226,11 +227,11 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
           </div>
         )}
 
-        <div className="mt-6 flex flex-col gap-2">
+        <div className="mt-6 flex flex-col gap-3">
           <button
             type="submit"
             disabled={submitting || blockedByRateLimit}
-            className="min-h-12 cursor-pointer bg-brand-600 px-4 text-base font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-primary min-h-12 w-full px-4 text-base"
           >
             {submitting
               ? "Confirming"
@@ -244,7 +245,7 @@ export default function BookingForm({ slot, onBooked, onChangeSlot, onServerErro
             type="button"
             onClick={onChangeSlot}
             disabled={submitting}
-            className="min-h-11 cursor-pointer px-4 text-sm font-medium underline underline-offset-4 disabled:opacity-60"
+            className="btn-secondary min-h-11 w-full px-4 text-sm"
           >
             Change appointment
           </button>

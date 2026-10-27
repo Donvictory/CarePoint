@@ -16,18 +16,18 @@ export default function ErrorState({
   action,
 }: Props) {
   return (
-    <div className="border border-alert bg-alert-bg p-5" role="alert">
+    <div className="rounded-lg border border-alert-border bg-alert-bg p-5" role="alert">
       <div className="flex items-start gap-3">
         <BangMark className="mt-1 h-4 w-4 shrink-0 text-alert" />
         <div>
-          <h3 className="font-serif text-lg font-semibold">{title}</h3>
-          <p className="mt-1 text-sm">{message}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
+          <p className="mt-1 text-sm text-text-secondary">{message}</p>
+          <div className="mt-4 flex flex-wrap gap-3">
             {onRetry && (
               <button
                 type="button"
                 onClick={onRetry}
-                className="min-h-11 cursor-pointer bg-brand-600 px-4 text-sm font-medium text-white"
+                className="btn-primary min-h-11 px-4 text-sm"
               >
                 {retryLabel}
               </button>
@@ -36,7 +36,7 @@ export default function ErrorState({
               <button
                 type="button"
                 onClick={action.onClick}
-                className="min-h-11 cursor-pointer border border-ink px-4 text-sm font-medium"
+                className="btn-secondary min-h-11 px-4 text-sm"
               >
                 {action.label}
               </button>
