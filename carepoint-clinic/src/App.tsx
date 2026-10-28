@@ -607,7 +607,7 @@ export default function App() {
 
 
       <footer className="border-t border-border-default bg-surface-raised">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-6 text-sm text-text-tertiary sm:flex-row sm:justify-between sm:px-6 lg:flex lg:justify-center">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-6 text-sm text-text-tertiary sm:flex-row sm:justify-between sm:px-6 lg:flex lg:justify-center md:flex md:justify-center">
           <p>2026 CarePoint Clinic. All rights reserved.</p>
         </div>
       </footer>
