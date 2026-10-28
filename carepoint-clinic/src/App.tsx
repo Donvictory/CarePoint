@@ -225,7 +225,14 @@ export default function App() {
   async function handleCancelBooking() {
     if (!confirmed) return;
     const bookingId = confirmed.booking.id;
-    await cancelBooking(bookingId, confirmed.booking.email);
+    try {
+      await cancelBooking(bookingId, confirmed.booking.email);
+    } catch (err) {
+      const info = toApiErrorInfo(err);
+      if (!info.message.toLowerCase().includes("already cancelled")) {
+        throw err;
+      }
+    }
     setConfirmed((current) =>
       current
         ? {

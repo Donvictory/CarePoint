@@ -59,6 +59,7 @@ export default function ManageBooking({
         }
     }
 
+
     async function handleCancel(booking: Booking) {
         if (booking.status !== "confirmed") return;
 
@@ -81,15 +82,34 @@ export default function ManageBooking({
                         : item,
                 ),
             );
-
-            onBookingUpdated();
+            try {
+                onBookingUpdated();
+            } catch (refreshError) {
+                console.error(
+                    "Booking cancelled, but refreshing slots failed:",
+                    refreshError,
+                );
+            }
         } catch (err) {
             const info = toApiErrorInfo(err);
+            if (info.message.toLowerCase().includes("already cancelled")) {
+                setBookings((current) =>
+                    current.map((item) =>
+                        item.id === booking.id
+                            ? { ...item, status: "cancelled" }
+                            : item,
+                    ),
+                );
+                try {
+                    onBookingUpdated();
+                } catch { }
+            }
             setCancelError(info.message);
         } finally {
             setCancellingId(null);
         }
     }
+
 
     return (
         <section
