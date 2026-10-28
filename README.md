@@ -9,44 +9,4 @@ Cancellation Flow: Cancel scheduled appointments with instant state updates and 
 Resilient Error & Rate-Limit Handling: Granular error categorization for timeouts, network failures, conflicts, authorization errors, and rate limits with retry-after timers.
 Configurable API Access: Built-in API key management modal with persistent localStorage storage.
 Accessible & Responsive Design: Healthcare design system, smooth reveal transitions with prefers-reduced-motion support, and dialog focus trapping.
-Tech Stack
-Frontend: React 18
-Language: TypeScript
-Bundler & Dev Server: Vite 6
-Styling: Tailwind CSS v4 via @tailwindcss/vite
-Schema Validation: Zod
-Typography: Google Fonts (Manrope)
-Project Structure
-text
-carepoint/
-└── carepoint-clinic/
-    ├── public/
-    │   └── favicon.svg
-    ├── src/
-    │   ├── components/
-    │   │   ├── ApiKeyPanel.tsx        # API key entry and storage modal
-    │   │   ├── BookingConfirmation.tsx# Successful booking details and actions
-    │   │   ├── BookingForm.tsx        # Patient details form with validation
-    │   │   ├── CareLogo.tsx           # Brand icon and logo mark
-    │   │   ├── ErrorState.tsx         # Inline and block error presentations
-    │   │   ├── Header.tsx             # Navbar with connection status indicator
-    │   │   ├── LoadingState.tsx       # Skeleton and spinner indicators
-    │   │   ├── ManageBooking.tsx      # Email lookup and booking cancellation
-    │   │   ├── Marks.tsx              # Status icons and symbols
-    │   │   └── SlotCard.tsx           # Individual slot card component
-    │   ├── schemas/
-    │   │   └── booking.ts             # Zod runtime parsing schemas
-    │   ├── services/
-    │   │   └── api.ts                 # HTTP client, error handling, and API endpoints
-    │   ├── types/
-    │   │   └── booking.ts             # TypeScript interfaces and error kinds
-    │   ├── utils/
-    │   │   └── date.ts                # Date formatting and timezone helpers
-    │   ├── App.tsx                    # Main application state and page layout
-    │   ├── index.css                  # Global styles and Tailwind imports
-    │   └── main.tsx                   # React DOM root entry
-    ├── .env.example                   # Sample environment configuration
-    ├── index.html                     # HTML root template with SEO metadata
-    ├── package.json                   # Project metadata and dependencies
-    ├── tsconfig.json                  # TypeScript compiler configuration
-    └── vite.config.ts                 # Vite bundler and Tailwind plugin configuration
+
